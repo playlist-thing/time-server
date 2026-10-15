@@ -1,0 +1,15 @@
+[package]
+name = "time-server"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "signal", "time"] }
+poem = "3.1.12"
+poem-openapi = { version = "5.1.16", features = ["swagger-ui"] }
+anyhow = "1.0.102"
+dotenvy = "0.15.7"
+
+[profile.release]
+lto = true
