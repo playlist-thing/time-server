@@ -1,8 +1,14 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use poem_openapi::{OpenApi, payload::PlainText};
+use poem_openapi::{ApiResponse, OpenApi, payload::PlainText};
 
 pub struct Api;
+
+#[derive(ApiResponse)]
+enum TimeResponse {
+    #[oai(status = 200)]
+    Time(PlainText<String>, #[oai(header = "Cache-Control")] String),
+}
 
 #[OpenApi]
 impl Api {
@@ -16,11 +22,12 @@ impl Api {
     ///
     /// Compatible with JavaScript's `Date.now()`.
     #[oai(path = "/time", method = "get")]
-    async fn time(&self) -> PlainText<String> {
+    async fn time(&self) -> TimeResponse {
         let millis = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("System clock is set before the Unix epoch")
             .as_millis();
-        PlainText(millis.to_string())
+
+        TimeResponse::Time(PlainText(millis.to_string()), "no-store".to_string())
     }
 }
